@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rosa ✨</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --gold: #f0c040;
+  --rose: #ff6b8a;
+  --deep: #0a0a0f;
+  --card: #12121a;
+  --border: rgba(240,192,64,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--deep);
+  color: #f0ece4;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Particles ── */
+#particles {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) scale(1);   opacity: 0; }
+  10%  { opacity: .7; }
+  90%  { opacity: .3; }
+  100% { transform: translateY(-100vh) scale(.5); opacity: 0; }
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  z-index: 1;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(255,107,138,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(240,192,64,.10) 0%, transparent 60%),
+    url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1400&auto=format&fit=crop') center/cover no-repeat;
+  filter: brightness(.35);
+  z-index: -1;
+}
+.hero-tag {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 18px;
+  font-size: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+  animation: fadeDown .9s ease both;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3.5rem, 12vw, 7rem);
+  line-height: 1;
+  background: linear-gradient(135deg, #fff 30%, var(--gold) 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeDown .9s .15s ease both;
+}
+.hero-sub {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  opacity: .8;
+  font-weight: 300;
+  letter-spacing: .03em;
+  animation: fadeDown .9s .3s ease both;
+}
+.hero-hearts {
+  display: flex; gap: 10px;
+  margin-top: 14px;
+  animation: fadeDown .9s .45s ease both;
+}
+.heart {
+  font-size: 1.4rem;
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+.heart:nth-child(2) { animation-delay: .3s; }
+.heart:nth-child(3) { animation-delay: .6s; }
+@keyframes heartbeat {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+.btn-primary {
+  margin-top: 40px;
+  padding: 16px 38px;
+  border: none;
+  border-radius: 100px;
+  background: linear-gradient(135deg, var(--gold), #e0a020);
+  color: #0a0a0f;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: .03em;
+  box-shadow: 0 8px 32px rgba(240,192,64,.35);
+  transition: transform .25s, box-shadow .25s;
+  animation: fadeDown .9s .6s ease both;
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 14px 44px rgba(240,192,64,.45);
+}
+
+/* ── Sections ── */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 5%;
+}
+.section-inner { max-width: 860px; margin: 0 auto; }
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: .75rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--rose);
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--rose), transparent);
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--gold);
+  margin-bottom: 36px;
+}
+
+/* ── Message card ── */
+.message-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 44px 48px;
+  line-height: 2;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(240,236,228,.9);
+  position: relative;
+  overflow: hidden;
+}
+.message-card::before {
+  content: '❝';
+  font-family: 'Playfair Display', serif;
+  position: absolute;
+  top: -10px; left: 20px;
+  font-size: 8rem;
+  opacity: .06;
+  color: var(--gold);
+  line-height: 1;
+}
+.message-card em { font-style: italic; color: var(--gold); }
+
+/* ── Hidden message ── */
+.hidden-trigger {
+  margin-top: 28px;
+  text-align: center;
+}
+.hidden-hint {
+  font-size: .78rem;
+  opacity: .35;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: opacity .3s;
+  user-select: none;
+}
+.hidden-hint:hover { opacity: .7; }
+
+.hidden-message {
+  display: none;
+  margin-top: 20px;
+  background: linear-gradient(135deg, rgba(255,107,138,.08), rgba(240,192,64,.06));
+  border: 1px solid rgba(255,107,138,.3);
+  border-radius: 20px;
+  padding: 36px 40px;
+  text-align: center;
+  animation: riseIn .8s cubic-bezier(.34,1.56,.64,1) both;
+}
+.hidden-message .secret-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  display: block;
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+.hidden-message p {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #ffccd5;
+}
+.hidden-message .secret-sig {
+  margin-top: 18px;
+  font-size: .85rem;
+  opacity: .55;
+  font-style: normal;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ── Wheel ── */
+.wheel-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pointer-wrap {
+  position: relative;
+  z-index: 10;
+  margin-bottom: -6px;
+}
+.pointer-svg {
+  filter: drop-shadow(0 4px 12px rgba(240,192,64,.6));
+  animation: pointerBob 2s ease-in-out infinite;
+}
+@keyframes pointerBob {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.wheel-ring {
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  border: 6px solid transparent;
+  background: linear-gradient(var(--deep), var(--deep)) padding-box,
+              linear-gradient(135deg, var(--gold), var(--rose), var(--gold)) border-box;
+  padding: 6px;
+  box-shadow: 0 0 40px rgba(240,192,64,.25), inset 0 0 40px rgba(0,0,0,.4);
+  position: relative;
+}
+.wheel {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  position: relative;
+  transition: transform 5.5s cubic-bezier(.17,.67,.12,1);
+  background: conic-gradient(
+    #e63946 0deg 60deg,
+    #7b2d8b 60deg 120deg,
+    #06b48a 120deg 180deg,
+    #e8a020 180deg 240deg,
+    #2176ae 240deg 300deg,
+    #e07030 300deg 360deg
+  );
+}
+.wheel::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--deep);
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 12px rgba(240,192,64,.5);
+  z-index: 5;
+}
+.labels {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.label {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform-origin: 0 0;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,.7);
+}
+.spin-btn {
+  margin-top: 28px;
+  padding: 15px 42px;
+  border: 2px solid var(--gold);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: .05em;
+  transition: all .3s;
+}
+.spin-btn:hover:not(:disabled) {
+  background: var(--gold);
+  color: var(--deep);
+  box-shadow: 0 6px 24px rgba(240,192,64,.4);
+  transform: scale(1.04);
+}
+.spin-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── Reward ── */
+.reward {
+  display: none;
+  margin-top: 44px;
+  text-align: center;
+  animation: riseIn .8s cubic-bezier(.34,1.56,.64,1) both;
+  width: 100%;
+  max-width: 500px;
+}
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(30px) scale(.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.reward h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.reward-sub { font-size: 1rem; opacity: .8; margin-bottom: 24px; }
+.code-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.code-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240,192,64,.12), transparent 70%);
+}
+.code-label {
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: .7;
+  margin-bottom: 10px;
+}
+.code-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: .1em;
+  margin-bottom: 22px;
+  word-break: break-all;
+}
+.copy-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 100px;
+  background: linear-gradient(135deg, var(--gold), #e0a020);
+  color: var(--deep);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+.copy-btn:hover { transform: scale(1.04); box-shadow: 0 6px 20px rgba(240,192,64,.35); }
+.countdown { margin-top: 22px; font-size: .85rem; opacity: .55; letter-spacing: .04em; }
+
+/* ── Divider / Footer ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 0 5%;
+}
+footer { padding: 48px 20px; text-align: center; font-size: .85rem; opacity: .4; letter-spacing: .05em; }
+
+/* ── Destroyed ── */
+.destroyed {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100vh; text-align: center; padding: 40px; background: #000;
+}
+.destroyed .big-heart { font-size: 6rem; animation: heartbeat 1.4s ease-in-out infinite; margin-bottom: 30px; }
+.destroyed p { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); }
+
+/* ── Animations ── */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .wheel-ring { width: 270px; height: 270px; }
+  .message-card { padding: 28px 24px; }
+  .label { font-size: .7rem; }
+  .hidden-message { padding: 28px 22px; }
+}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">✦ Uma Surpresa Especial ✦</div>
+  <h1>Rosa</h1>
+  <p class="hero-sub">Hoje celebra-se alguém verdadeiramente especial</p>
+  <div class="hero-hearts">
+    <span class="heart">🌸</span>
+    <span class="heart">💛</span>
+    <span class="heart">✨</span>
+  </div>
+  <button class="btn-primary" onclick="handleOpen()">Abrir Surpresa 🎁</button>
+</div>
+
+<div class="divider"></div>
+
+<!-- MESSAGE -->
+<section id="content">
+  <div class="section-inner">
+    <div class="section-label">🌹 Uma Mensagem</div>
+    <h2 class="section-title">Feliz Aniversário ❤️</h2>
+    <div class="message-card">
+      Rosa…<br><br>
+      Talvez eu não consiga estar contigo hoje fisicamente,
+      mas queria criar algo <em>único</em> para te fazer sorrir.<br><br>
+      Porque tu mereces coisas bonitas,
+      momentos bonitos
+      e pessoas que se lembrem de ti com muito carinho.<br><br>
+      Que este dia seja tão <em>luminoso</em> quanto és. ✨
+    </div>
+
+    <!-- Hidden message trigger -->
+    <div class="hidden-trigger">
+      <p class="hidden-hint" onclick="revealSecret()" title="Clica aqui">
+        ✦ &nbsp; há algo mais escondido aqui &nbsp; ✦
+      </p>
+      <div class="hidden-message" id="hiddenMsg">
+        <span class="secret-emoji">💌</span>
+        <p>
+          Se eu pudesse escolher um momento para ficar para sempre,<br>
+          escolhia qualquer um em que estejas a sorrir.<br><br>
+          Tens esse jeito de iluminar tudo à tua volta<br>
+          sem sequer te aperceberes. É por isso que és especial.
+        </p>
+        <p class="secret-sig">— só para ti 🌸</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WHEEL -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">🎡 A tua Sorte</div>
+    <h2 class="section-title">Gira a Roleta!</h2>
+
+    <div class="wheel-wrap">
+      <div class="pointer-wrap">
+        <svg class="pointer-svg" width="36" height="44" viewBox="0 0 36 44" fill="none">
+          <path d="M18 44 L0 0 H36 Z" fill="#f0c040"/>
+          <circle cx="18" cy="8" r="5" fill="#0a0a0f" stroke="#f0c040" stroke-width="2"/>
+        </svg>
+      </div>
+
+      <div class="wheel-ring">
+        <div class="wheel" id="wheel">
+          <div class="labels">
+            <div class="label" style="transform:rotate(20deg) translate(88px);">💐 Flores</div>
+            <div class="label" style="transform:rotate(80deg) translate(84px);">📱 Telemóvel</div>
+            <div class="label" style="transform:rotate(143deg) translate(82px);">500 MZN 💰</div>
+            <div class="label" style="transform:rotate(203deg) translate(82px);">200 MZN 💵</div>
+            <div class="label" style="transform:rotate(258deg) translate(68px);">⭐ Recarga 100</div>
+            <div class="label" style="transform:rotate(318deg) translate(82px);">🎁 Surpresa</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="spin-btn" id="spinBtn" onclick="spinWheel()">Girar 🎡</button>
+
+      <div class="reward" id="reward">
+        <h2>🎉 Parabéns Rosa!</h2>
+        <p class="reward-sub">Ganhaste uma Recarga Movitel ❤️</p>
+        <div class="code-card">
+          <div class="code-label">Código de Recarga</div>
+          <div class="code-value" id="code">3663734683579</div>
+          <button class="copy-btn" onclick="copyCode(event)">📋 Copiar Código</button>
+        </div>
+        <p class="countdown" id="countdown">Este site vai desaparecer em 10 segundos… 👀</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+<footer>Feito especialmente para Rosa ✨ — com muito carinho</footer>
+
+<script>
+/* ══════════════════════════════
+   EMAILJS CONFIG
+   ─────────────────────────────
+   1. Cria conta em https://emailjs.com (gratuito)
+   2. Dashboard → "Add New Service" → escolhe Gmail → liga a tua conta Google
+      Copia o "Service ID" e cola em EMAILJS_SERVICE_ID abaixo
+   3. Dashboard → "Email Templates" → "Create New Template"
+      No template usa estas variáveis:
+        {{event}}   → tipo de evento
+        {{time}}    → data e hora
+        {{details}} → detalhes extra
+      Copia o "Template ID" e cola em EMAILJS_TEMPLATE_ID abaixo
+   4. Dashboard → "Account" → "Public Key"
+      Cola em EMAILJS_PUBLIC_KEY abaixo
+   ══════════════════════════════ */
+const EMAILJS_SERVICE_ID  = 'service_ojphlko';   // ← substitui
+const EMAILJS_TEMPLATE_ID = 'template_9mgr33x';  // ← substitui
+const EMAILJS_PUBLIC_KEY  = '905CFs617lQ1oPBEu';   // ← substitui
+const NOTIFY_EMAIL        = 'jorgemaabuie@gmail.com';
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+const EMAIL_LABELS = {
+  rosa_visits : '👀 A Rosa abriu o site!',
+  rosa_opened : '🎁 A Rosa clicou em "Abrir Surpresa"!',
+  rosa_spun   : '🎡 A Rosa girou a roleta!',
+  rosa_secret : '💌 A Rosa descobriu a mensagem secreta!',
+  rosa_copied : '📋 A Rosa copiou o código de recarga!',
+};
+
+function sendEmail(key) {
+  const label = EMAIL_LABELS[key] || key;
+  const now   = new Date().toLocaleString('pt-PT', {
+    weekday:'long', day:'2-digit', month:'long',
+    year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email : NOTIFY_EMAIL,
+    event    : label,
+    time     : now,
+    details  : `Evento: ${key}\nData/Hora: ${now}\nURL: ${location.href}`,
+  }).catch(() => {}); // falha silenciosa — não afecta a experiência da Rosa
+}
+
+/* ══════════════════════════════
+   TRACKING  (localStorage + email)
+   Keys:
+     rosa_visits   → array of ISO timestamps
+     rosa_opened   → ISO timestamp when she clicked the button
+     rosa_spun     → ISO timestamp when she spun
+     rosa_secret   → ISO timestamp when she revealed the secret
+     rosa_copied   → ISO timestamp when she copied the code
+   ══════════════════════════════ */
+
+function track(key) {
+  const now = new Date().toISOString();
+  if (key === 'rosa_visits') {
+    const visits = JSON.parse(localStorage.getItem('rosa_visits') || '[]');
+    // Só envia email na primeira visita de cada sessão (evita spam em refresh)
+    const lastVisit = visits[visits.length - 1];
+    const isNewSession = !lastVisit || (Date.now() - new Date(lastVisit).getTime()) > 5 * 60 * 1000;
+    visits.push(now);
+    localStorage.setItem('rosa_visits', JSON.stringify(visits));
+    if (isNewSession) sendEmail('rosa_visits');
+  } else {
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, now);
+      sendEmail(key); // envia só na primeira vez
+    }
+  }
+}
+
+// Track visit on load
+track('rosa_visits');
+
+/* ── Particles ── */
+(function() {
+  const container = document.getElementById('particles');
+  const colors = ['#f0c040','#ff6b8a','#ffffff','#ff9eb5'];
+  for (let i = 0; i < 28; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 5 + 2;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      bottom:-10px;
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*12}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+/* ── Open button ── */
+function handleOpen() {
+  track('rosa_opened');
+  document.getElementById('content').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ── Hidden message ── */
+let secretRevealed = false;
+function revealSecret() {
+  if (secretRevealed) return;
+  secretRevealed = true;
+  track('rosa_secret');
+  document.getElementById('hiddenMsg').style.display = 'block';
+  document.querySelector('.hidden-hint').style.opacity = '0';
+}
+
+/* ── Wheel ── */
+let spun = false;
+function spinWheel() {
+  if (spun) return;
+  spun = true;
+  track('rosa_spun');
+
+  const btn = document.getElementById('spinBtn');
+  btn.disabled = true;
+  btn.textContent = 'A girar…';
+
+  const wheel = document.getElementById('wheel');
+  /* Fatia ⭐ Recarga 100 → 240°–300°, centro=270°
+     finalRotation = 8×360 + (360−270) = 2880 + 90 = 2970° */
+  wheel.style.transform = `rotate(${8 * 360 + 90}deg)`;
+
+  setTimeout(() => {
+    document.getElementById('reward').style.display = 'block';
+    launchConfetti();
+    startCountdown();
+  }, 5700);
+}
+
+/* ── Copy ── */
+function copyCode(e) {
+  track('rosa_copied');
+  const code = document.getElementById('code').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = e.target;
+    btn.textContent = '✅ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar Código', 2000);
+  });
+}
+
+/* ── Confetti ── */
+function launchConfetti() {
+  const end = Date.now() + 5000;
+  const colors = ['#f0c040','#ff6b8a','#ffffff','#7b2d8b'];
+  (function frame() {
+    confetti({ particleCount: 6, spread: 80, colors,
+      origin: { x: Math.random(), y: Math.random() - 0.1 } });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+}
+
+/* ── Countdown ── */
+function startCountdown() {
+  let t = 10;
+  const el = document.getElementById('countdown');
+  const iv = setInterval(() => {
+    t--;
+    el.textContent = `Este site vai desaparecer em ${t} segundo${t!==1?'s':''}… 👀`;
+    if (t <= 0) { clearInterval(iv); destroySite(); }
+  }, 1000);
+}
+
+/* ── Destroy ── */
+function destroySite() {
+  document.body.innerHTML = `
+    <div class="destroyed">
+      <div class="big-heart">❤️</div>
+      <p>Rosa, espero que tenhas gostado ✨</p>
+    </div>`;
+  document.body.style.background = '#000';
+  setTimeout(() => {
+    try { window.open('','_self'); window.close(); } catch(e) {}
+    location.replace('about:blank');
+  }, 3000);
+}
+</script>
+</body>
+</html>

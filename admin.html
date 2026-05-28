@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Rosa ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --gold: #f0c040;
+  --rose: #ff6b8a;
+  --green: #06d6a0;
+  --red: #ff4d6d;
+  --deep: #0a0a0f;
+  --card: #12121a;
+  --card2: #1a1a26;
+  --border: rgba(240,192,64,0.2);
+}
+
+body {
+  background: var(--deep);
+  color: #f0ece4;
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+/* ── Lock screen ── */
+#lockScreen {
+  position: fixed; inset: 0;
+  background: var(--deep);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  gap: 20px;
+  padding: 40px;
+}
+.lock-icon { font-size: 3rem; }
+.lock-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+}
+.lock-sub { font-size: .9rem; opacity: .5; }
+.pin-input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 22px;
+  color: #fff;
+  font-size: 1.4rem;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: .4em;
+  text-align: center;
+  width: 200px;
+  outline: none;
+  transition: border-color .2s;
+}
+.pin-input:focus { border-color: var(--gold); }
+.lock-btn {
+  padding: 13px 36px;
+  border: none;
+  border-radius: 100px;
+  background: linear-gradient(135deg, var(--gold), #e0a020);
+  color: var(--deep);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.lock-btn:hover { transform: scale(1.04); }
+.lock-error { color: var(--red); font-size: .85rem; min-height: 20px; }
+
+/* ── Dashboard ── */
+#dashboard { display: none; max-width: 800px; margin: 0 auto; }
+
+.dash-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.dash-tag {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 16px;
+  font-size: .7rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.dash-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  color: var(--gold);
+}
+.dash-sub { font-size: .9rem; opacity: .45; margin-top: 6px; }
+
+/* ── Status cards ── */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 36px;
+}
+.status-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s;
+}
+.status-card:hover { transform: translateY(-2px); }
+.status-card::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  opacity: .07;
+}
+.status-card.yes::before { background: var(--green); }
+.status-card.no::before  { background: var(--red); }
+.status-card.count::before { background: var(--gold); }
+
+.status-icon { font-size: 2rem; margin-bottom: 10px; }
+.status-label {
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .45;
+  margin-bottom: 6px;
+}
+.status-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.status-card.yes .status-value  { color: var(--green); }
+.status-card.no  .status-value  { color: var(--red); }
+.status-card.count .status-value { color: var(--gold); }
+.status-time {
+  margin-top: 6px;
+  font-size: .72rem;
+  opacity: .4;
+  line-height: 1.5;
+}
+
+/* ── Visits timeline ── */
+.section-title-sm {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title-sm::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+}
+
+.timeline {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.timeline-empty {
+  padding: 32px;
+  text-align: center;
+  opacity: .35;
+  font-size: .9rem;
+}
+.timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: .9rem;
+  transition: background .2s;
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-item:hover { background: rgba(255,255,255,.02); }
+.t-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(240,192,64,.12);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.t-date { opacity: .45; font-size: .8rem; flex: 1; }
+.t-time { color: var(--gold); font-weight: 500; font-size: .85rem; }
+
+/* ── Refresh & clear ── */
+.actions {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 32px;
+}
+.action-btn {
+  padding: 11px 26px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  letter-spacing: .04em;
+}
+.action-btn.refresh {
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+}
+.action-btn.refresh:hover {
+  background: rgba(240,192,64,.1);
+}
+.action-btn.clear {
+  border: 1px solid rgba(255,77,109,.4);
+  background: transparent;
+  color: var(--red);
+}
+.action-btn.clear:hover { background: rgba(255,77,109,.08); }
+
+.last-refresh {
+  text-align: center;
+  font-size: .75rem;
+  opacity: .3;
+  margin-top: 16px;
+}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-icon">🔒</div>
+  <h1 class="lock-title">Área Privada</h1>
+  <p class="lock-sub">Insere o PIN para aceder</p>
+  <input class="pin-input" type="password" id="pinInput"
+         maxlength="6" placeholder="••••"
+         onkeydown="if(event.key==='Enter') checkPin()">
+  <button class="lock-btn" onclick="checkPin()">Entrar</button>
+  <p class="lock-error" id="lockError"></p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+
+  <div class="dash-header">
+    <div class="dash-tag">✦ Painel Secreto ✦</div>
+    <h1 class="dash-title">Actividade da Rosa</h1>
+    <p class="dash-sub" id="lastRefresh"></p>
+  </div>
+
+  <!-- Status cards -->
+  <div class="status-grid" id="statusGrid"></div>
+
+  <!-- Visits -->
+  <h2 class="section-title-sm">🕐 Histórico de Visitas</h2>
+  <div class="timeline" id="timeline"></div>
+
+  <div class="actions">
+    <button class="action-btn refresh" onclick="loadData()">↻ Actualizar</button>
+    <button class="action-btn clear" onclick="clearData()">🗑 Limpar dados</button>
+  </div>
+
+</div>
+
+<script>
+/* ── PIN ── */
+// Change this PIN to whatever you want
+const ADMIN_PIN = '1234';
+
+function checkPin() {
+  const val = document.getElementById('pinInput').value.trim();
+  if (val === ADMIN_PIN) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  } else {
+    const err = document.getElementById('lockError');
+    err.textContent = 'PIN incorrecto. Tenta de novo.';
+    document.getElementById('pinInput').value = '';
+    setTimeout(() => err.textContent = '', 2500);
+  }
+}
+
+/* ── Format date ── */
+function fmt(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  const date = d.toLocaleDateString('pt-PT', { day:'2-digit', month:'long', year:'numeric' });
+  const time = d.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  return { date, time, full: `${date} às ${time}` };
+}
+
+function ago(iso) {
+  if (!iso) return '';
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  const hrs  = Math.floor(mins / 60);
+  const days = Math.floor(hrs / 24);
+  if (days > 0)  return `há ${days} dia${days>1?'s':''}`;
+  if (hrs  > 0)  return `há ${hrs} hora${hrs>1?'s':''}`;
+  if (mins > 0)  return `há ${mins} minuto${mins>1?'s':''}`;
+  return 'agora mesmo';
+}
+
+/* ── Load data ── */
+function loadData() {
+  const visits  = JSON.parse(localStorage.getItem('rosa_visits') || '[]');
+  const opened  = localStorage.getItem('rosa_opened');
+  const spun    = localStorage.getItem('rosa_spun');
+  const secret  = localStorage.getItem('rosa_secret');
+  const copied  = localStorage.getItem('rosa_copied');
+
+  // Status cards
+  const grid = document.getElementById('statusGrid');
+  grid.innerHTML = '';
+
+  const statuses = [
+    {
+      icon: visits.length > 0 ? '👀' : '😴',
+      label: 'Visitas',
+      value: visits.length > 0 ? `${visits.length} vez${visits.length>1?'es':''}` : 'Ainda não',
+      time: visits.length > 0 ? ago(visits[visits.length - 1]) : '',
+      cls: visits.length > 0 ? 'count' : 'no'
+    },
+    {
+      icon: opened ? '🎁' : '📦',
+      label: 'Abriu a Surpresa',
+      value: opened ? 'Sim! ✓' : 'Ainda não',
+      time: opened ? fmt(opened).full : '',
+      cls: opened ? 'yes' : 'no'
+    },
+    {
+      icon: spun ? '🎡' : '⏳',
+      label: 'Girou a Roleta',
+      value: spun ? 'Sim! ✓' : 'Ainda não',
+      time: spun ? fmt(spun).full : '',
+      cls: spun ? 'yes' : 'no'
+    },
+    {
+      icon: secret ? '💌' : '🔒',
+      label: 'Mensagem Secreta',
+      value: secret ? 'Descobriu ✓' : 'Ainda não',
+      time: secret ? fmt(secret).full : '',
+      cls: secret ? 'yes' : 'no'
+    },
+    {
+      icon: copied ? '📋' : '⬜',
+      label: 'Copiou o Código',
+      value: copied ? 'Sim! ✓' : 'Ainda não',
+      time: copied ? fmt(copied).full : '',
+      cls: copied ? 'yes' : 'no'
+    },
+  ];
+
+  statuses.forEach(s => {
+    const card = document.createElement('div');
+    card.className = `status-card ${s.cls}`;
+    card.innerHTML = `
+      <div class="status-icon">${s.icon}</div>
+      <div class="status-label">${s.label}</div>
+      <div class="status-value">${s.value}</div>
+      ${s.time ? `<div class="status-time">${s.time}</div>` : ''}
+    `;
+    grid.appendChild(card);
+  });
+
+  // Timeline
+  const tl = document.getElementById('timeline');
+  if (visits.length === 0) {
+    tl.innerHTML = '<div class="timeline-empty">Nenhuma visita registada ainda 🌙</div>';
+  } else {
+    tl.innerHTML = '';
+    // Show most recent first
+    [...visits].reverse().forEach((iso, i) => {
+      const f = fmt(iso);
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+      item.innerHTML = `
+        <div class="t-num">${visits.length - i}</div>
+        <div class="t-date">${f.date} &nbsp;·&nbsp; ${ago(iso)}</div>
+        <div class="t-time">${f.time}</div>
+      `;
+      tl.appendChild(item);
+    });
+  }
+
+  // Last refresh
+  const now = new Date().toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  document.getElementById('lastRefresh').textContent = `Actualizado às ${now}`;
+}
+
+/* ── Clear ── */
+function clearData() {
+  if (!confirm('Tens a certeza que queres apagar todos os dados?')) return;
+  ['rosa_visits','rosa_opened','rosa_spun','rosa_secret','rosa_copied'].forEach(k => localStorage.removeItem(k));
+  loadData();
+}
+
+/* Auto-refresh every 30s */
+setInterval(() => {
+  if (document.getElementById('dashboard').style.display !== 'none') loadData();
+}, 30000);
+</script>
+</body>
+</html>
